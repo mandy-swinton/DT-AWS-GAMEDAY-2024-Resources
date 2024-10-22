@@ -5,7 +5,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,40 @@ import com.dynatrace.demo.util.Configurations;
 public class LambdaCallerController {
 	
 	private Configurations config = new Configurations();
+	private Boolean isMakeError = true;
 	
 	
 	public LambdaCallerController() {
 	}
+	
+	@GetMapping(path = "/makeerror")
+	public ResponseEntity<String> makeError() {
+		if (isMakeError) {
+			int currentMinute = LocalDateTime.now().getMinute();
+			if (currentMinute < 20) {
+				return new ResponseEntity<>("THIS TURTLE NEEDS A LITTLE BIT LONGER", HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+		}
+	}
+		
+	@GetMapping(path = "/fixerror")
+	public ResponseEntity<String> fixerror() {
+		isMakeError = false;
+		return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/turnerroron")
+	public ResponseEntity<String> turnerroron() {
+		isMakeError = true;
+		return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+	}
+	
+	
+	
 	
 	@GetMapping(path = "/lambda1")
 	public ResponseEntity<String> retrieveCars() {
